@@ -1,80 +1,83 @@
-# Verwende Ubuntu 22.04 als Basis
 FROM ubuntu:22.04
 
-# Erstelle Benutzer 'yocto' mit UID und GID 1000
+# Set environment variables to noninteractive to avoid tzdata prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y \
+        sudo \
+        git \
+        wget \
+        nano \
+        curl \
+        locales \
+        build-essential \
+        gawk \
+        chrpath \
+        diffstat \
+        texinfo \
+        python3 \
+        python3-pip \
+        python3-pexpect \
+        xz-utils \
+        debianutils \
+        iputils-ping \
+        vim \
+        libncurses5-dev \
+        libncursesw5-dev \
+        unzip \
+        screen \
+        bison \
+        flex \
+        sudo \
+        cpio \
+        rsync \
+        file \
+        lz4 \
+        zstd \
+        libsdl1.2-dev \
+        xterm \
+        libssl-dev \
+        repo \
+        bc && \
+    apt-get clean
+
+# Repo-Tool (falls nicht im Paket)
+RUN curl https://storage.googleapis.com/git-repo-downloads/repo > /usr/local/bin/repo && \
+    chmod a+x /usr/local/bin/repo
+
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
 RUN groupadd -g 1000 yocto && useradd -m -u 1000 -g 1000 -s /bin/bash yocto && \
     echo 'yocto:yocto' | chpasswd && adduser yocto sudo
 
-# Setze Arbeitsverzeichnis
-WORKDIR /home/yocto
-
-# Installiere notwendige Tools für Yocto inkl. zstd, file etc.
-RUN apt update 
-
-RUN apt-get install -y \
-    sudo \
-    git \
-    wget \
-    curl \
-    python3 \
-    python3-pip \
-    g++ \
-    make \
-    gcc \
-    chrpath \
-    diffstat \
-    lz4 \
-    zstd \
-    libzstd-dev \
-    file \
-    libxml2-dev \
-    zlib1g-dev \
-    unzip \
-    build-essential \
-    flex \
-    bison \
-    cpio \
-    gawk \
-    nano \
-    locales \
-    && rm -rf /var/lib/apt/lists/*
-
-# Setze locale auf en_US.UTF-8
-RUN locale-gen en_US.UTF-8 && update-locale LANG=en_US.UTF-8
-ENV LANG=en_US.UTF-8
-ENV LANGUAGE=en_US:en
-ENV LC_ALL=en_US.UTF-8
-
-# Wechsle zu Benutzer 'yocto'
 USER yocto
-
-# Arbeitsverzeichnis
 WORKDIR /home/yocto
 
-# Erstelle yocto-project Ordner und clone alle Repos
-RUN mkdir -p ~/yocto-project && cd ~/yocto-project && \
-    git clone git://git.yoctoproject.org/poky && \
-    git clone https://github.com/STMicroelectronics/meta-st-stm32mp.git && \
-    git clone git://git.openembedded.org/meta-openembedded
+RUN git config --global user.name "lrncke" && \
+    git config --global user.email "leon.arnecke@stud.htwk-leipzig.de"
 
-RUN cd yocto-project/poky/
+# Shared output
+RUN mkdir -p /home/yocto/shared_output
+VOLUME /home/yocto/shared_output
 
-RUN source oe-init-build-env ../build-stm32
+RUN mkdir -p stm32mp1-yocto && cd stm32mp1-yocto
+#repo init -u https://github.com/STMicroelectronics/oe-manifest.git -b kirkstone
+#repo sync -j4
+#sudo apt-get install bsdmainutils gcc-multilib libegl1-mesa libgmp-dev libmpc-dev pylint python3-git python3-jinja2 socat
+#cd ~/stm32mp1-yocto && source layers/meta-st/scripts/envsetup.sh
+#cd ~/stm32mp1-yocto && bitbake-layers create-layer meta-myapp
+#cd ~/stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco && bitbake-layers add-layer ../meta-myapp
+#mkdir -p ~/stm32mp1-yocto/meta-myapp/recipes-apps/hello
+#Erstellen der Programme und bb-Datein
+#nano ~/stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco/conf/local.conf
+#Einfügen von IMAGE_INSTALL:append = " hello"
+#cd ~/stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco
+#bitbake st-image-core
+#Fertiges Image unter /stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco/tmp-glibc/deploy/images/stm32mp13-disco
 
-RUN cd ../meta-st-stm32mp && git checkout kirkstone
-
-RUN cd ../poky && git checkout -b kirkstone origin/kirkstone
-
-RUN cd ../meta-openembedded && git checkout -b kirkstone origin/kirkstone
-
-RUN bitbake-layers add-layer ../meta-openembedded/meta-oe
-
-RUN bitbake-layers add-layer ../meta-openembedded/meta-python
-
-RUN bitbake-layers add-layer ../meta-st-stm32mp
-
-RUN bitbake-layers add-layer ../meta-openembedded/meta-networking
-
-
-# Öffne bash
-CMD ["bash"]
+CMD [ "bash" ]
