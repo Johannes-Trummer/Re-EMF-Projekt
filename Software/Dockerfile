@@ -81,5 +81,6 @@ RUN mkdir -p stm32mp1-yocto && cd stm32mp1-yocto
 #cd ~/stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco
 #bitbake st-image-core
 #Fertiges Image unter /stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco/tmp-glibc/deploy/images/stm32mp13-disco
+#Kopieren: docker cp yocto-dev:/home/yocto/stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco/tmp-glibc/deploy/images/stm32mp13-disco/kernel C:\Users\Leon\Desktop\Test_ES3\Dokumente
 
 CMD [ "bash" ]
