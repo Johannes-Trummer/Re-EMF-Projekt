@@ -1,4 +1,4 @@
-eFROM ubuntu:22.04
+FROM ubuntu:22.04
 #docker build -t yocto-stm32mp1 .
 #docker run -it -v C:\Users\Leon\Desktop\Test_ES3 --name yocto-dev yocto-stm32mp1
 
