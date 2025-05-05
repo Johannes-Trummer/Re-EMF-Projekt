@@ -80,7 +80,7 @@ RUN mkdir -p stm32mp1-yocto && cd stm32mp1-yocto
 #Einfügen von IMAGE_INSTALL:append = " hello"
 #cd ~/stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco
 #bitbake st-image-core
-#Fertiges Image unter /stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco/tmp-glibc/deploy/images/stm32mp13-disco
-#Kopieren: docker cp yocto-dev:/home/yocto/stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco/tmp-glibc/deploy/images/stm32mp13-disco/kernel C:\Users\Leon\Desktop\Test_ES3\Dokumente
-
+#cd ~/stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco/tmp-glibc/deploy/images/stm32mp13-disco/scripts
+#./create_sdcard_from_flashlayout.sh ../flashlayout_st-image-weston/extensible/FlashLayout_sdcard_stm32mp135f-dk-extensible.tsv
+#docker cp 39261739a2b5:/home/yocto/stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco/tmp-glibc/deploy/images/stm32mp13-disco/FlashLayout_sdcard_stm32mp135f-dk-extensible.raw C:\Users\Leon\Documents\Yocto_Project
 CMD [ "bash" ]
