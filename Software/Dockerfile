@@ -83,4 +83,6 @@ RUN mkdir -p stm32mp1-yocto && cd stm32mp1-yocto
 #cd ~/stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco/tmp-glibc/deploy/images/stm32mp13-disco/scripts
 #./create_sdcard_from_flashlayout.sh ../flashlayout_st-image-weston/extensible/FlashLayout_sdcard_stm32mp135f-dk-extensible.tsv
 #docker cp 39261739a2b5:/home/yocto/stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco/tmp-glibc/deploy/images/stm32mp13-disco/FlashLayout_sdcard_stm32mp135f-dk-extensible.raw C:\Users\Leon\Documents\Yocto_Project
+#sudo wipefs -a /dev/sda
+#sudo dd if=FlashLayout_sdcard_stm32mp135f-dk-extensible.raw of=/dev/sda bs=4M status=progress
 CMD [ "bash" ]
