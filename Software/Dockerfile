@@ -77,7 +77,7 @@ RUN mkdir -p stm32mp1-yocto && cd stm32mp1-yocto
 #mkdir -p ~/stm32mp1-yocto/meta-myapp/recipes-apps/hello && cd ~/stm32mp1-yocto/meta-myapp/recipes-apps/hello
 #Erstellen der Programme und bb-Datein
 #nano ~/stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco/conf/local.conf
-#Einfügen von IMAGE_INSTALL:append = " hello libgpiod packagegroup-core-buildessential"
+#Einfügen von IMAGE_INSTALL:append = " hello libgpiod packagegroup-core-buildessential nano"
 #cd ~/stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco
 #bitbake st-image-core #oder# bitbake st-image-weston
 #cd ~/stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco/tmp-glibc/deploy/images/stm32mp13-disco/scripts
