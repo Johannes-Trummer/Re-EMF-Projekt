@@ -94,9 +94,11 @@ int main() {
         waitConversionComplete(fd);
         int16_t raw1 = (int16_t)readRegister(fd, ADS1115_REG_POINTER_CONVERT);
         float volts1 = rawToVolts(raw1);
+        float amps = 9.88*volts1 - 25.27;
+        amps = amps*1000;
 
         // Ausgabe
-        printf("Kanal 0: %6d -> %.4f V    |    Kanal 1: %6d -> %.4f V\n", raw0, volts0, raw1, volts1);
+        printf("Kanal 0: %6d -> %.4f V    |    Kanal 1: %6d -> %.4f mA\n", raw0, volts0, raw1, amps);
 
         sleep(1); // 1 Sekunde warten
     }

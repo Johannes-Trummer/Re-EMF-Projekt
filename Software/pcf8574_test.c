@@ -91,10 +91,10 @@ int main() {
 
     // Pin0 und Pin1 als OUTPUT, HIGH setzen (also Input/Pullup)
     pcf8574_pinMode(0, 0); // OUTPUT (LOW)
-    pcf8574_digitalWrite(0, true); // Setze Pin0 auf HIGH -> Input/Pullup (wegen open-drain)
+    pcf8574_digitalWrite(0, false); // Setze Pin0 auf HIGH -> Input/Pullup (wegen open-drain) //macht Probleme
 
     pcf8574_pinMode(1, 0); // OUTPUT (LOW)
-    pcf8574_digitalWrite(1, true); // Setze Pin1 auf HIGH -> Input/Pullup (wegen open-drain)
+    pcf8574_digitalWrite(1, true); // Setze Pin1 auf HIGH -> Input/Pullup (wegen open-drain) //Entladen
 
     // Pin2 als Eingang
     pcf8574_pinMode(2, 1); // INPUT
