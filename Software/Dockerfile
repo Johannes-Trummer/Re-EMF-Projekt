@@ -1,6 +1,4 @@
 FROM ubuntu:22.04
-#docker build -t yocto-stm32mp1 .
-#docker run -it -v C:\Users\Leon\Desktop\Test_ES3 --name yocto-dev yocto-stm32mp1
 
 # Set environment variables to noninteractive to avoid tzdata prompts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -68,21 +66,4 @@ RUN mkdir -p /home/yocto/shared_output
 VOLUME /home/yocto/shared_output
 
 RUN mkdir -p stm32mp1-yocto && cd stm32mp1-yocto
-#cd /stm32mp1-yocto/ && repo init -u https://github.com/STMicroelectronics/oe-manifest.git -b kirkstone
-#repo sync -j4
-#sudo apt-get install bsdmainutils gcc-multilib libegl1-mesa libgmp-dev libmpc-dev pylint python3-git python3-jinja2 socat
-#cd ~/stm32mp1-yocto && source layers/meta-st/scripts/envsetup.sh
-#cd ~/stm32mp1-yocto && bitbake-layers create-layer meta-myapp
-#cd ~/stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco && bitbake-layers add-layer ../meta-myapp
-#mkdir -p ~/stm32mp1-yocto/meta-myapp/recipes-apps/hello && cd ~/stm32mp1-yocto/meta-myapp/recipes-apps/hello
-#Erstellen der Programme und bb-Datein
-#nano ~/stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco/conf/local.conf
-#Einfügen von IMAGE_INSTALL:append = " hello libgpiod packagegroup-core-buildessential nano" IMAGE_ROOTFS_MAXSIZE = "900000"
-#cd ~/stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco
-#bitbake st-image-core #oder# bitbake st-image-weston
-#cd ~/stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco/tmp-glibc/deploy/images/stm32mp13-disco/scripts
-#./create_sdcard_from_flashlayout.sh ../flashlayout_st-image-weston/extensible/FlashLayout_sdcard_stm32mp135f-dk-extensible.tsv
-#docker cp 39261739a2b5:/home/yocto/stm32mp1-yocto/build-openstlinuxweston-stm32mp13-disco/tmp-glibc/deploy/images/stm32mp13-disco/FlashLayout_sdcard_stm32mp135f-dk-extensible.raw C:\Users\Leon\Documents\Yocto_Project
-#sudo wipefs -a /dev/sda
-#sudo dd if=FlashLayout_sdcard_stm32mp135f-dk-extensible.raw of=/dev/sda bs=4M status=progress
 CMD [ "bash" ]
