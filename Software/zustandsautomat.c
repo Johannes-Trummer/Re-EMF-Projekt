@@ -75,6 +75,7 @@ void writeRegister(int fd, uint8_t reg, uint16_t value);
 uint16_t readRegister(int fd, uint8_t reg);
 void waitConversionComplete(int fd);
 float rawToVolts(int16_t raw);
+void schalte_modus_sicher(int modus);  // 0=beide aus, 1=laden an, 2=entladen an
 
 //Zustandsübergang
 int zustandsuebergang(int alterzustand){
@@ -94,10 +95,10 @@ int zustandsuebergang(int alterzustand){
 	if(alterzustand == Z_SPANNUNG_MESSEN_1 && spannung >= SOLL_LADESPANNUNG){
 		neuerzustand = Z_ZAEHLER_ERHOEHEN;
 	}
-	if(alterzustand == Z_ZAEHLER_ERHOEHEN && wiederholung <= MAX_WIEDERHOLUNGEN){
+	if(alterzustand == Z_ZAEHLER_ERHOEHEN && wiederholung < MAX_WIEDERHOLUNGEN){
 		neuerzustand = Z_ENTLADEN_AN;
 	}
-	if(alterzustand == Z_ENTLADEN_AN && entladezeitzaehler == MAX_ENTLADEZEIT){
+	if(alterzustand == Z_ENTLADEN_AN && entladezeitzaehler >= MAX_ENTLADEZEIT){
 		neuerzustand = Z_ENTLADEN_AUS;
 	}
 	if(alterzustand == Z_ENTLADEN_AUS){
@@ -118,7 +119,7 @@ int zustandsuebergang(int alterzustand){
 	if(alterzustand == Z_AUFSUMMIEREN){
 		neuerzustand = Z_ENTLADEN_AN;
 	}		
-	if(alterzustand == Z_ZAEHLER_ERHOEHEN && wiederholung == MAX_WIEDERHOLUNGEN){
+	if(alterzustand == Z_ZAEHLER_ERHOEHEN && wiederholung >= MAX_WIEDERHOLUNGEN){
 		neuerzustand = Z_ENDE;
 	}		
 	
@@ -130,23 +131,24 @@ void ausgangslogik(int aktuellerzustand){
 	if(aktuellerzustand == Z_START){
 		printf("Zustand: Z_START\n");
 		starttaster = einganglesen();
-		printf("taster: %d\n\n", starttaster);
+		printf("Taster: %d\n\n", starttaster);
 	}
 	if(aktuellerzustand == Z_SPANNUNG_MESSEN_1){
 		printf("Zustand: Z_SPANNUNG_MESSEN_1\n");
 		spannung = spannungmessen();
-		printf("Gemessene Spannung: %.3f V\n\n", spannung);
+		printf("Gemessene Spannung: %.5f V\n\n", spannung);
 	}
 	if(aktuellerzustand == Z_LADEN_AN){
 		printf("Zustand: Z_LADEN_AN\n\n");
-		ausgangsetzen(1,0);
+    		schalte_modus_sicher(1);
+                messwertspeicher[messwert] = ladung / 3600;
+                messwert += 1;
+                ladung = 0.0;
 		sleep(60);
 	}
 	if(aktuellerzustand == Z_LADEN_AUS){
 		printf("Zustand: Z_LADEN_AUS\n\n");
-		ausgangsetzen(0,0);
-		//Schaltzeit
-		usleep(20000);
+    		schalte_modus_sicher(0);
 	}
 	if(aktuellerzustand == Z_ZAEHLER_ERHOEHEN){
 		printf("Zustand: Z_ZAEHLER_ERHOEHEN\n");
@@ -155,40 +157,35 @@ void ausgangslogik(int aktuellerzustand){
 	}
 	if(aktuellerzustand == Z_ENTLADEN_AN){
 		printf("Zustand: Z_ENTLADEN_AN\n\n");
-		ausgangsetzen(0,1);
+    		schalte_modus_sicher(2);
 	}
 	if(aktuellerzustand == Z_ENTLADEN_AUS){
 		printf("Zustand: Z_ENTLADEN_AUS\n\n");
-		ausgangsetzen(0,0);
+    		schalte_modus_sicher(0);
                 entladezeitzaehler = 0;
-                messwertspeicher[messwert] = ladung;
-                messwert += 1;
-                ladung = 0.0;
-		//Schaltzeit
-		usleep(20000);
 	}
 	if(aktuellerzustand == Z_SPANNUNG_MESSEN_2){
 		printf("Zustand: Z_SPANNUNG_MESSEN_2\n");
 		spannung = spannungmessen();
-		printf("Gemessene Spannung: %.3f V\n\n", spannung);
+		printf("Gemessene Spannung: %.5f V\n\n", spannung);
 	}
 	if(aktuellerzustand == Z_STROM_MESSEN){
 		printf("Zustand: Z_STROM_MESSEN\n");
 		strom = strommessen();
-		printf("Gemessener Strom: %.3f A\n\n", strom);
+		printf("Gemessener Strom: %.5f A\n\n", strom);
 	}
 	if(aktuellerzustand == Z_AUFSUMMIEREN){
 		printf("Zustand: Z_AUFSUMMIEREN\n");
 		stromsummieren(&ladung, strom);
-		printf("Ladung: %.3f As\n\n", ladung);
+		printf("Ladung: %.5f Ah\n\n", ladung / 3600);
                 entladezeitzaehler += 1;
-                usleep(1000000);
+                usleep(880000);
 	}
 	if(aktuellerzustand == Z_ENDE){
 		printf("Zustand: Z_ENDE\n\n");
                 printf("Messwerte aus Speicher:\n");
                 for(int i = 0; i < messwert; i++){
-                     printf("Messwert %d: %.3f As\n", i, messwertspeicher[i]);
+                     printf("Messwert %d: %.5f As\n", i, messwertspeicher[i]);
                 }
 		fertig = 1;
 	}
@@ -248,7 +245,7 @@ float strommessen(){
     int16_t raw = (int16_t)readRegister(fd_ads, ADS1115_REG_POINTER_CONVERT);
     float volts = rawToVolts(raw);
     float amps = 9.88*volts - 25.27;
-    return amps*1000;
+    return amps;
 }
 void ausgangsetzen(int pin0, int pin1){
 	if (pin0) _writebuf |= (1 << 0);
@@ -288,3 +285,14 @@ void waitConversionComplete(int fd) {
 float rawToVolts(int16_t raw) {
     return raw * 6.144f / 32768.0f;
 }
+void schalte_modus_sicher(int modus) {   // 0=beide aus, 1=laden an, 2=entladen an
+    // beide aus
+    ausgangsetzen(0, 0);
+    usleep(100000);   // 20 ms Totzeit (Datenblatt: Operate ≤8 ms, Release ≤4 ms → genug Reserve)
+
+    // gewünschtes Relais einschalten
+    if (modus == 1) ausgangsetzen(1, 0);   // Laden an
+    if (modus == 2) ausgangsetzen(0, 1);   // Entladen an
+
+    usleep(20000);    // kurze Stabilisierung
+}
