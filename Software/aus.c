@@ -94,18 +94,7 @@ int main() {
     pcf8574_digitalWrite(0, false); // Setze Pin0 auf HIGH -> Input/Pullup (wegen open-drain) //macht Probleme
 
     pcf8574_pinMode(1, 0); // OUTPUT (LOW)
-    pcf8574_digitalWrite(1, true); // Setze Pin1 auf HIGH -> Input/Pullup (wegen open-drain) //Entladen
-
-    // Pin2 als Eingang
-    pcf8574_pinMode(2, 1); // INPUT
-
-    // Lese Pin2
-    bool pin2_val;
-    if (pcf8574_digitalRead(2, &pin2_val)) {
-        printf("Pin2 Eingang gelesen: %d\n", pin2_val ? 1 : 0);
-    } else {
-        printf("Fehler beim Lesen von Pin2\n");
-    }
+    pcf8574_digitalWrite(1, false); // Setze Pin1 auf HIGH -> Input/Pullup (wegen open-drain) //Entladen
 
     pcf8574_close();
     return 0;

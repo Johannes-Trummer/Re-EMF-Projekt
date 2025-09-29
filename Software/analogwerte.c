@@ -81,7 +81,7 @@ int main() {
         writeRegister(fd, ADS1115_REG_POINTER_CONFIG, config0);
         waitConversionComplete(fd);
         int16_t raw0 = (int16_t)readRegister(fd, ADS1115_REG_POINTER_CONVERT);
-        float volts0 = rawToVolts(raw0);
+        float volts0 = 4.35*rawToVolts(raw0);
 
         // Kanal 1 starten
         uint16_t config1 = ADS1115_CONFIG_OS_SINGLE |
